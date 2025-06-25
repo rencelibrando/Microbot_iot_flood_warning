@@ -1,0 +1,49 @@
+Required Arduino Libraries for ESP8266 + Arduino Separated IoT Controller:
+
+=== FOR ESP8266 WIFI MODULE ===
+
+1. ESP8266WiFi - Built-in with ESP8266 board package
+2. FirebaseESP8266 - Install via Library Manager
+   - Search for "Firebase ESP8266 Client" by Mobizt
+3. ArduinoJson - Install via Library Manager
+   - Search for "ArduinoJson" by Benoit Blanchon
+
+=== FOR ARDUINO CONTROLLER ===
+
+1. LiquidCrystal_I2C - For I2C LCD control (install via Library Manager)
+   - Search for "LiquidCrystal I2C" by Frank de Brabander
+2. SoftwareSerial - Built-in Arduino library (optional for different pins)
+
+Installation Instructions:
+
+ESP8266 Setup:
+1. Open Arduino IDE
+2. Go to Tools > Board > Boards Manager
+3. Search for "esp8266" and install "ESP8266 Community" package
+4. Go to Sketch > Include Library > Manage Libraries
+5. Search and install:
+   - Firebase ESP8266 Client
+   - ArduinoJson (version 6.x recommended)
+
+Arduino Setup:
+1. LiquidCrystal library is pre-installed
+2. No additional libraries needed for basic operation
+
+Board Configurations:
+
+ESP8266:
+- Board: NodeMCU 1.0 (ESP-12E Module) or Wemos D1 Mini
+- CPU Frequency: 80 MHz
+- Flash Size: 4M (3M SPIFFS)
+- Upload Speed: 115200
+
+Arduino:
+- Board: Arduino Uno
+- Processor: ATmega328P
+- Upload Speed: 115200
+
+Code Files:
+- esp8266_wifi_module/esp8266_wifi_module.ino → Upload to ESP8266
+- arduino_controller/arduino_controller.ino → Upload to Arduino Uno
+
+Communication: Serial at 9600 baud (TX/RX pins) 

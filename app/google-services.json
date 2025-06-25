@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "983186089663",
+    "project_id": "minrobot-387a5",
+    "storage_bucket": "minrobot-387a5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983186089663:android:b71d4001f9769f26e9080a",
+        "android_client_info": {
+          "package_name": "com.example.minrobotiot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpjdDHsfWwXxrD23tQKcZlBY56Ie2UVcA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,143 @@
+====================================================================
+           ESP8266 + ARDUINO SEPARATED SETUP WIRING DIAGRAM
+====================================================================
+
+POWER SUPPLY CONNECTIONS:
+------------------------
+External Power Supply (7-12V DC):
+  Positive (+) → Arduino VIN pin
+  Positive (+) → ESP8266 VIN pin (if module supports it) OR 3.3V pin
+  Negative (-) → Arduino GND pin
+  Negative (-) → ESP8266 GND pin
+
+Note: Use a breadboard or power distribution board to share power
+
+SERIAL COMMUNICATION (ESP8266 ↔ Arduino):
+-----------------------------------------
+ESP8266 TX    → Arduino Pin 0 (RX)
+ESP8266 RX    → Arduino Pin 1 (TX)
+ESP8266 GND   → Arduino GND (common ground)
+
+Important: Make sure both devices share a common ground!
+
+I2C LCD CONNECTIONS (16x2 LCD with I2C backpack to Arduino):
+------------------------------------------------------------
+Arduino A4 (SDA) → LCD SDA
+Arduino A5 (SCL) → LCD SCL
+Arduino 5V       → LCD VCC
+Arduino GND      → LCD GND
+
+Note: No potentiometer needed - contrast controlled via I2C backpack
+
+WATER SENSOR CONNECTIONS (to Arduino):
+--------------------------------------
+Arduino A0      → Water Sensor Signal Pin
+Arduino 5V      → Water Sensor VCC (+)
+Arduino GND     → Water Sensor GND (-)
+
+Note: Water sensor automatically triggers emergency when water level is high
+
+BUZZER CONNECTIONS (to Arduino):
+-------------------------------
+Arduino Pin 8   → Buzzer Positive (+)
+Arduino GND     → Buzzer Negative (-)
+
+EMERGENCY LED CONNECTIONS (to Arduino):
+--------------------------------------
+Arduino Pin 7   → 220Ω Resistor → LED Anode (+) [Red LED recommended]
+Arduino GND     → LED Cathode (-)
+
+Note: Always use a current-limiting resistor (220Ω) with LED to prevent damage
+
+COMPLETE CONNECTION SUMMARY:
+---------------------------
+
+ESP8266 Module:
+- VIN/3.3V ← External Power Supply (+)
+- GND ← External Power Supply (-) and Arduino GND
+- TX → Arduino Pin 0 (RX)
+- RX → Arduino Pin 1 (TX)
+
+Arduino Uno:
+- VIN ← External Power Supply (+)
+- GND ← External Power Supply (-), ESP8266 GND, LCD GND, Water Sensor GND, Buzzer (-), LED Cathode (-)
+- Pin 0 (RX) ← ESP8266 TX
+- Pin 1 (TX) → ESP8266 RX
+- Pin 7 → 220Ω Resistor → Emergency LED Anode (+)
+- Pin 8 → Buzzer (+)
+- A0 (Analog) → Water Sensor Signal Pin
+- A4 (SDA) → LCD SDA
+- A5 (SCL) → LCD SCL
+- 5V → LCD VCC, Water Sensor VCC
+- GND → LCD GND, Water Sensor GND, Buzzer (-), LED Cathode (-)
+
+16x2 I2C LCD:
+- VCC ← Arduino 5V
+- GND ← Arduino GND
+- SDA ← Arduino A4
+- SCL ← Arduino A5
+
+Water Sensor (Analog):
+- VCC ← Arduino 5V
+- GND ← Arduino GND
+- Signal ← Arduino A0
+
+Buzzer:
+- Positive (+) ← Arduino Pin 8
+- Negative (-) ← Arduino GND
+
+Emergency LED (Red LED):
+- Anode (+) ← 220Ω Resistor ← Arduino Pin 7
+- Cathode (-) ← Arduino GND
+
+POWER SUPPLY REQUIREMENTS:
+-------------------------
+- Voltage: 7-12V DC
+- Current: At least 500mA (recommended 1A)
+- Both devices will be powered through VIN pins
+- Arduino's onboard regulator will provide 5V and 3.3V
+- ESP8266 can use 3.3V from Arduino if it doesn't have VIN
+
+EMERGENCY SYSTEM FEATURES:
+-------------------------
+- Manual Emergency: Activated via Admin button in Android app
+- Automatic Water Emergency: Triggered when water sensor detects high water level
+- Both emergencies: LED flashes rapidly + buzzer sounds siren pattern
+- Water emergency shows "Water level high" message on LCD
+- Manual emergency shows "EMERGENCY ACTIVATED" message on LCD
+- Emergency can be deactivated via app or automatic timeout (30 seconds)
+- Water emergency auto-deactivates when water level returns to normal
+
+LCD DISPLAY FEATURES:
+---------------------
+- Normal text: Static display on LCD
+- Long text: Scrolling marquee style (left to right)
+- Emergency mode: Static emergency messages
+- Status line: Shows water sensor reading and connection status
+
+IMPORTANT NOTES:
+---------------
+1. Always connect common ground between all devices
+2. Make sure power supply can handle all devices + LED + Water sensor
+3. ESP8266 and Arduino communicate via Serial (9600 baud)
+4. Upload code to each device separately
+5. Arduino controls all peripherals (LCD, buzzer, emergency LED, water sensor)
+6. ESP8266 handles only WiFi and Firebase communication
+7. Test connections before applying power
+8. Use breadboard for prototyping, PCB for permanent setup
+9. ALWAYS use 220Ω resistor with LED to prevent damage
+10. Emergency LED should be clearly visible (red color recommended)
+11. Water sensor should be positioned to detect flooding/high water levels
+12. Water sensor threshold values may need adjustment based on sensor type
+
+TROUBLESHOOTING:
+---------------
+- If no communication: Check TX/RX connections and baud rate
+- If power issues: Verify power supply voltage and current capacity
+- If LCD not working: Check contrast potentiometer and wiring
+- If buzzer not working: Check polarity and pin connection
+- If LED not working: Check polarity, resistor, and pin connection
+- If emergency not working: Check Firebase permissions and admin access
+- If water sensor not working: Check analog reading on A0 pin and power connections
+- If water sensor too sensitive: Adjust WATER_THRESHOLD_HIGH value in code
+- If water sensor not sensitive enough: Lower WATER_THRESHOLD_HIGH value in code 
