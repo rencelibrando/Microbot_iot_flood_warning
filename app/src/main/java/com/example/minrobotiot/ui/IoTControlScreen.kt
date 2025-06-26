@@ -5,36 +5,57 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.minrobotiot.data.AlertSeverity
 import com.example.minrobotiot.data.DeviceStatus
 import com.example.minrobotiot.data.WarningAlert
-import com.example.minrobotiot.data.AlertSeverity
-import com.example.minrobotiot.viewmodel.IoTUiState
 import com.example.minrobotiot.viewmodel.IoTViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -134,7 +155,6 @@ fun IoTControlScreen() {
             ModernEmergencyControlContent(
                 emergencyState = emergencyState,
                 deviceStatus = deviceStatus,
-                onReasonChange = { viewModel.updateEmergencyReason(it) },
                 onActivateEmergency = { viewModel.activateManualEmergency() },
                 onDeactivateEmergency = { viewModel.deactivateManualEmergency() },
                 enabled = connectionState.isOnline && !uiState.isLoading
@@ -440,7 +460,6 @@ fun ModernWarningAlertItem(
 fun ModernEmergencyControlContent(
     emergencyState: com.example.minrobotiot.viewmodel.EmergencyState,
     deviceStatus: DeviceStatus,
-    onReasonChange: (String) -> Unit,
     onActivateEmergency: () -> Unit,
     onDeactivateEmergency: () -> Unit,
     enabled: Boolean
@@ -658,17 +677,8 @@ fun ModernDeviceControlsContent(
             onSendLCD = onSendLCD,
             enabled = enabled
         )
-        
-        ModernBuzzerControlCard(
-            uiState = uiState,
-            onActionChange = onActionChange,
-            onDurationChange = onDurationChange,
-            onSendBuzzer = onSendBuzzer,
-            enabled = enabled
-        )
     }
 }
-
 @Composable
 fun ModernLCDControlCard(
     uiState: com.example.minrobotiot.viewmodel.IoTUiState,
@@ -717,92 +727,3 @@ fun ModernLCDControlCard(
         }
     }
 }
-
-@Composable
-fun ModernBuzzerControlCard(
-    uiState: com.example.minrobotiot.viewmodel.IoTUiState,
-    onActionChange: (String) -> Unit,
-    onDurationChange: (Int) -> Unit,
-    onSendBuzzer: (String) -> Unit,
-    enabled: Boolean
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = "Buzzer Control",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            
-            // Action selection
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Select Action:", style = MaterialTheme.typography.bodyMedium)
-                
-                val actions = listOf("beep", "alarm", "siren")
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    actions.forEach { action ->
-                        FilterChip(
-                            onClick = { onActionChange(action) },
-                            label = { Text(action.uppercase()) },
-                            selected = uiState.selectedBuzzerAction == action,
-                            modifier = Modifier.weight(1f),
-                            enabled = enabled
-                        )
-                    }
-                }
-            }
-            
-            // Duration input
-            if (uiState.selectedBuzzerAction != "beep") {
-                OutlinedTextField(
-                    value = uiState.buzzerDuration.toString(),
-                    onValueChange = { value ->
-                        value.toIntOrNull()?.let { onDurationChange(it) }
-                    },
-                    label = { Text("Duration (seconds)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = enabled,
-                    shape = RoundedCornerShape(8.dp)
-                )
-            }
-            
-            // Action buttons
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedButton(
-                    onClick = { onSendBuzzer("beep") },
-                    modifier = Modifier.weight(1f),
-                    enabled = enabled,
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Quick Beep")
-                }
-                
-                Button(
-                    onClick = { onSendBuzzer(uiState.selectedBuzzerAction) },
-                    modifier = Modifier.weight(1f),
-                    enabled = enabled,
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Send ${uiState.selectedBuzzerAction.uppercase()}")
-                }
-            }
-        }
-    }
-}
-
- 
